@@ -1,5 +1,6 @@
-# Database files used for testing
+# Database files except unit test files
 *.db
+!/tests/examples/*.db
 
 # Prerequisites
 *.d
@@ -54,5 +55,12 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# Build files
 build
+
+# vcpkg
 vcpkg_installed
+vcpkg-manifest-install.log
+
+# clangd
+.cache/
