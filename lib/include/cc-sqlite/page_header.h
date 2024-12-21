@@ -27,6 +27,15 @@ typedef struct
 
 } PageHeader;
 
+/**
+ * Read page header
+ *
+ * @param file File to read
+ * @param page_size Database page size
+ * @param page Database page number (zero-indexed)
+ * @param header [out] Page header
+ * @return Status Code
+ */
 int page_header_read(FILE *file, const uint16_t page_size, const size_t page, PageHeader *header);
 
 #endif

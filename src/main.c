@@ -21,29 +21,34 @@ int main(int argc, char *argv[])
     const char *database_file_path = argv[1];
     const char *command = argv[2];
 
+    FILE *database_file = fopen(database_file_path, "rb");
+    if (!database_file)
+    {
+        fprintf(stderr, "Failed to open the database file\n");
+        return 1;
+    }
+
+    FileHeader file_header;
+    if (file_header_read(database_file, &file_header) != EXIT_SUCCESS)
+    {
+        fprintf(stderr, "Failed to read file header\n");
+        return 1;
+    }
+
+    PageHeader page_header;
+    if (page_header_read(database_file, file_header.page_size, 0, &page_header) != EXIT_SUCCESS)
+    {
+        fprintf(stderr, "Failed to read page header\n");
+        return 1;
+    }
+
     if (strcmp(command, ".dbinfo") == 0)
     {
-        FILE *database_file = fopen(database_file_path, "rb");
-        if (!database_file)
-        {
-            fprintf(stderr, "Failed to open the database file\n");
-            return 1;
-        }
-
-        FileHeader file_header;
-        if (file_header_read(database_file, &file_header) != EXIT_SUCCESS)
-        {
-            fprintf(stderr, "Failed to read file header\n");
-            return 1;
-        }
-
-        PageHeader page_header;
-        if (page_header_read(database_file, file_header.page_size, 0, &page_header) != EXIT_SUCCESS)
-        {
-            fprintf(stderr, "Failed to read page header\n");
-            return 1;
-        }
-
+        printf("database page size: %u\n", file_header.page_size);
+        printf("number of tables: %u\n", page_header.cell_count);
+    }
+    else if (strcmp(command, ".tables") == 0)
+    {
         uint16_t usable_page_size =
             file_header.page_size - file_header.reserved - 100; // first page has the db file header
 
@@ -80,17 +85,31 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "Failed to read cell payload\n");
                 return 1;
             }
-            RecordHeader record_header;
 
+            RecordHeader record_header;
             if (read_record_header(cell_payload, cell_payload_size, &record_header) != EXIT_SUCCESS)
             {
                 fprintf(stderr, "Failed to read record header\n");
                 return 1;
             }
-        }
 
-        printf("database page size: %u\n", file_header.page_size);
-        printf("number of tables: %u\n", page_header.cell_count);
+            ColumnData *record_data = (ColumnData *)malloc(sizeof(ColumnData) * record_header.count);
+            if (read_record_data(cell_payload, &record_header, record_data) != EXIT_SUCCESS)
+            {
+                fprintf(stderr, "Failed to read record data\n");
+                return 1;
+            }
+
+            const size_t tbl_name_col = 2;
+            if (i < page_header.cell_count - 1)
+            {
+                printf("%s ", record_data[tbl_name_col].value.text);
+            }
+            else
+            {
+                printf("%s\n", record_data[tbl_name_col].value.text);
+            }
+        }
 
         fclose(database_file);
     }

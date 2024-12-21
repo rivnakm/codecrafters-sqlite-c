@@ -14,7 +14,7 @@
  * @param [out] value Value of the varint
  * @return Number of bytes read, or 0 if there was an error
  */
-size_t read_varint(const uint8_t *buf, uint64_t *value);
+size_t read_varint(const uint8_t *buf, int64_t *value);
 
 /**
  * Write an integer into the buffer as a variable-length integer
@@ -26,6 +26,6 @@ size_t read_varint(const uint8_t *buf, uint64_t *value);
  * @param value Value to write
  * @return Encoded length of the value, in bytes
  */
-size_t write_varint(uint8_t *buf, const uint64_t value);
+size_t write_varint(uint8_t *buf, const int64_t value);
 
 #endif

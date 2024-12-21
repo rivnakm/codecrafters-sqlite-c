@@ -4,16 +4,16 @@
 #include "file_header_test.h"
 #include "varint_test.h"
 
-static char *varint_value_params[] = {"0",
-                                      "240",
-                                      "2287",
-                                      "67823",
-                                      "16777215",
-                                      "4294967295",
-                                      "1099511627775",
-                                      "281474976710655",
-                                      "72057594037927935",
-                                      "72057594037927936",
+static char *varint_value_params[] = {"0x0",
+                                      "0x100",
+                                      "0x10000",
+                                      "0x1000000",
+                                      "0x100000000",
+                                      "0x10000000000",
+                                      "0x1000000000000",
+                                      "0x100000000000000",
+                                      "0x7FFFFFFFFFFFFFFF",
+                                      "-0x8000000000000000",
                                       NULL};
 
 static MunitParameterEnum varint_test_params[] = {{"varint_value", varint_value_params}, {NULL, NULL}};
@@ -21,6 +21,17 @@ static MunitParameterEnum varint_test_params[] = {{"varint_value", varint_value_
 static MunitTest all_tests[] = {
     {(char *)"/varint/readwrite_varint", varint_test_readwrite_varint, NULL, NULL, MUNIT_TEST_OPTION_NONE,
      varint_test_params},
+    {(char *)"/varint/read_varint/1_byte", varint_test_read_varint_one_byte, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"/varint/read_varint/2_bytes", varint_test_read_varint_two_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     NULL},
+    {(char *)"/varint/read_varint/9_bytes", varint_test_read_varint_nine_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     NULL},
+    {(char *)"/varint/write_varint/1_byte", varint_test_write_varint_one_byte, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     NULL},
+    {(char *)"/varint/write_varint/2_bytes", varint_test_write_varint_two_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     NULL},
+    {(char *)"/varint/write_varint/9_bytes", varint_test_write_varint_nine_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     NULL},
     {(char *)"/bytes/to_be_bytes", bytes_test_to_be_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/to_signed_be_bytes/positive", bytes_test_to_signed_be_bytes_positive, NULL, NULL,
      MUNIT_TEST_OPTION_NONE, NULL},

@@ -13,11 +13,11 @@ typedef struct
 } FileHeader;
 
 /**
- * Read
+ * Read database file header
  *
- * @param file
- * @param header
- * @return
+ * @param file File to read
+ * @param header [out] Database file header
+ * @return Status code
  */
 int file_header_read(FILE *file, FileHeader *header);
 

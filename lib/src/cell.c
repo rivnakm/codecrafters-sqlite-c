@@ -13,7 +13,7 @@ typedef struct
     size_t length;
     uint32_t left;
     uint64_t payload_size;
-    uint64_t key;
+    int64_t key;
     uint32_t overflow_page;
 } CellHeader;
 
@@ -115,8 +115,10 @@ int read_leaf_table_cell_header(FILE *file, CellHeader *header, const uint16_t u
     fread(buf, sizeof(uint8_t), bufsize, file);
     // TODO: handle error
 
-    size_t varint_bytes = read_varint(buf, &header->payload_size);
+    int64_t varint_val;
+    size_t varint_bytes = read_varint(buf, &varint_val);
     header->length = varint_bytes;
+    header->payload_size = (uint64_t)varint_val;
 
     varint_bytes = read_varint(&(buf[varint_bytes]), &header->key);
     header->length += varint_bytes;
@@ -168,7 +170,9 @@ int read_leaf_index_cell_header(FILE *file, CellHeader *header, const uint16_t u
     fread(buf, sizeof(uint8_t), bufsize, file);
     // TODO: handle error
 
-    header->length = read_varint(buf, &header->payload_size);
+    int64_t varint_val;
+    header->length = read_varint(buf, &varint_val);
+    header->payload_size = (uint64_t)varint_val;
 
     // seek back to start of the cell
     fseek(file, -bufsize, SEEK_CUR);
@@ -205,8 +209,10 @@ int read_interior_index_cell_header(FILE *file, CellHeader *header, const uint16
     header->left = from_be_bytes(buf, 4);
     header->length = 4;
 
-    size_t varint_bytes = read_varint(&(buf[4]), &header->payload_size);
+    int64_t varint_val;
+    size_t varint_bytes = read_varint(&(buf[4]), &varint_val);
     header->length += varint_bytes;
+    header->payload_size = (uint64_t)varint_val;
 
     // seek back to start of the cell
     fseek(file, -bufsize, SEEK_CUR);

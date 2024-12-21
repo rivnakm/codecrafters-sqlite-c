@@ -49,7 +49,6 @@ int64_t from_signed_be_bytes(const uint8_t *src, const size_t n)
         first = ~first;
         value = (uint64_t)first;
     }
-    fprintf(stderr, "initial value: %04lX\n", value);
 
     for (size_t i = 1; i < n; i++)
     {
