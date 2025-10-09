@@ -1,5 +1,5 @@
-#ifndef PAGE_HEADER_H
-#define PAGE_HEADER_H
+#ifndef CCSQLITE_PAGE_HEADER_H
+#define CCSQLITE_PAGE_HEADER_H
 
 #include <stddef.h>
 #include <stdint.h>

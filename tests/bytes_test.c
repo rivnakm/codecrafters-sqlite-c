@@ -1,6 +1,8 @@
 #include "bytes_test.h"
-#include "cc-sqlite/bytes.h"
+
 #include <stdint.h>
+
+#include "cc_sqlite/bytes.h"
 
 MunitResult bytes_test_to_be_bytes(const MunitParameter params[], void *data)
 {

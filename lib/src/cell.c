@@ -1,12 +1,12 @@
-#include "cc-sqlite/cell.h"
+#include "cc_sqlite/cell.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cc-sqlite/bytes.h"
-#include "cc-sqlite/page_header.h"
-#include "cc-sqlite/varint.h"
+#include "cc_sqlite/bytes.h"
+#include "cc_sqlite/page_header.h"
+#include "cc_sqlite/varint.h"
 
 typedef struct
 {

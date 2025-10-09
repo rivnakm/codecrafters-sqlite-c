@@ -1,5 +1,5 @@
-#ifndef VARINT_H
-#define VARINT_H
+#ifndef CCSQLITE_VARINT_H
+#define CCSQLITE_VARINT_H
 
 #include <stddef.h>
 #include <stdint.h>

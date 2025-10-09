@@ -1,12 +1,13 @@
-#include "cc-sqlite/record.h"
-#include "cc-sqlite/bytes.h"
-#include "cc-sqlite/varint.h"
+#include "cc_sqlite/record.h"
 
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "cc_sqlite/bytes.h"
+#include "cc_sqlite/varint.h"
 
 int read_record_header(const uint8_t *payload, const size_t payload_size, RecordHeader *header)
 {

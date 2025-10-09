@@ -1,8 +1,9 @@
-#ifndef CELL_HEADER_H
-#define CELL_HEADER_H
+#ifndef CCSQLITE_CELL_H
+#define CCSQLITE_CELL_H
 
-#include "cc-sqlite/page_header.h"
 #include <stdint.h>
+
+#include "cc_sqlite/page_header.h"
 
 /**
  * Read the contents of a cell payload

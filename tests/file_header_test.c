@@ -1,8 +1,9 @@
 #include "file_header_test.h"
-#include "cc-sqlite/file_header.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "cc_sqlite/file_header.h"
 
 MunitResult file_header_test_file_header_read(const MunitParameter params[], void *data)
 {

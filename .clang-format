@@ -1,0 +1,31 @@
+---
+BasedOnStyle: Microsoft
+IndentWidth: 4
+UseTab: Never
+TabWidth: 4
+
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Qt
+  - Regex: '^<Q.*>$'
+    Priority: 1
+    SortPriority: 2
+    CaseSensitive: true
+
+  # STL
+  - Regex: '^<[[:alnum:]]+>$'
+    Priority: 4
+    SortPriority: 1
+
+  # Project libs
+  - Regex: '^<fluentcad.*>$'
+    Priority: 2
+    SortPriority: 4
+
+  # 3rd-party libs
+  - Regex: '^<.*(.h|.hpp)>$'
+    Priority: 3
+
+  # Project headers
+  - Regex: '^".*"$'
+    Priority: 6

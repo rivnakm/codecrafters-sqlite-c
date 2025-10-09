@@ -1,5 +1,5 @@
-#ifndef RECORD_H
-#define RECORD_H
+#ifndef CCSQLITE_RECORD_H
+#define CCSQLITE_RECORD_H
 
 #include <stddef.h>
 #include <stdint.h>

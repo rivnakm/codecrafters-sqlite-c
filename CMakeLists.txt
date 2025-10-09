@@ -14,7 +14,9 @@ option(BUILD_TESTS "Build unit tests" FALSE)
 add_library(sqlite-lib STATIC
   lib/src/bytes.c
   lib/src/cell.c
+  lib/src/database.c
   lib/src/file_header.c
+  lib/src/loader.c
   lib/src/page_header.c
   lib/src/record.c
   lib/src/varint.c

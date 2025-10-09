@@ -1,10 +1,10 @@
-#include "cc-sqlite/varint.h"
+#include "cc_sqlite/varint.h"
 
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "cc-sqlite/bytes.h"
+#include "cc_sqlite/bytes.h"
 
 #define VARINT_MAX_BYTES (9)
 

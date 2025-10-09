@@ -57,6 +57,7 @@ dkms.conf
 
 # Build files
 build
+cmake-build-*/
 
 # vcpkg
 vcpkg_installed
@@ -64,3 +65,6 @@ vcpkg-manifest-install.log
 
 # clangd
 .cache/
+
+# CLion
+.idea/

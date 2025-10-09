@@ -1,5 +1,5 @@
-#ifndef BYTES_H
-#define BYTES_H
+#ifndef CCSQLITE_BYTES_H
+#define CCSQLITE_BYTES_H
 
 #include <stddef.h>
 #include <stdint.h>

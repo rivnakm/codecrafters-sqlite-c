@@ -1,10 +1,10 @@
-#include "cc-sqlite/page_header.h"
+#include "cc_sqlite/page_header.h"
 
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cc-sqlite/file_header.h"
+#include "cc_sqlite/file_header.h"
 
 int page_header_read(FILE *file, const uint16_t page_size, const size_t page, PageHeader *header)
 {

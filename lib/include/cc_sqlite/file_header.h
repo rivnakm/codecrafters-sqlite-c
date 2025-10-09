@@ -1,5 +1,5 @@
-#ifndef FILE_HEADER_H
-#define FILE_HEADER_H
+#ifndef CCSQLITE_FILE_HEADER_H
+#define CCSQLITE_FILE_HEADER_H
 
 #include <stdint.h>
 #include <stdio.h>

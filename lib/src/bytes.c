@@ -1,4 +1,5 @@
-#include "cc-sqlite/bytes.h"
+#include "cc_sqlite/bytes.h"
+
 #include <stdint.h>
 #include <stdio.h>
 
