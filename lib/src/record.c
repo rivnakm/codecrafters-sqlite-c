@@ -108,7 +108,7 @@ int read_record_header(const uint8_t *payload, const size_t payload_size, Record
     return EXIT_SUCCESS;
 }
 
-int read_record_data(const uint8_t *payload, const RecordHeader *header, ColumnData *data)
+int read_record_data(const uint8_t *payload, const RecordHeader *header, Column *columns)
 {
     size_t position = header->length;
     for (size_t i = 0; i < header->count; i++)
@@ -156,10 +156,58 @@ int read_record_data(const uint8_t *payload, const RecordHeader *header, ColumnD
             break;
         }
 
-        data[i] = (ColumnData){.data_type = current->data_type, .data_length = current->data_length, .value = value};
+        ColumnData *data = (ColumnData *)malloc(sizeof(ColumnData));
+        *data = (ColumnData){.data_type = current->data_type, .data_length = current->data_length, .value = value};
+
+        columns[i] = (Column){.header = *current, .data = data};
 
         position += current->data_length;
     }
 
     return EXIT_SUCCESS;
+}
+
+void record_free(Record *record)
+{
+    if (!record)
+        return;
+
+    for (size_t i = 0; i < record->header.count; i++)
+    {
+        record_data_free(record->columns[i].data);
+        record->columns[i].data = NULL;
+    }
+    free(record);
+}
+
+void record_data_free(ColumnData *data)
+{
+    if (!data)
+        return;
+
+    switch (data->data_type)
+    {
+    case COL_DATA_TYPE_BLOB:
+        if (!data->value.blob)
+        {
+            return;
+        }
+        free(data->value.blob);
+        data->value.blob = NULL;
+
+        break;
+    case COL_DATA_TYPE_TEXT:
+        if (!data->value.text)
+        {
+            return;
+        }
+        free(data->value.text);
+        data->value.text = NULL;
+
+        break;
+    default:
+        break;
+    }
+
+    free(data);
 }

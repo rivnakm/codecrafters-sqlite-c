@@ -2,6 +2,7 @@
 #define CCSQLITE_CELL_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "cc_sqlite/page_header.h"
 

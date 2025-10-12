@@ -3,7 +3,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 
 typedef enum
 {
@@ -21,21 +20,11 @@ typedef struct
     uint16_t cell_count;
     uint16_t cell_content_area_start;
     uint8_t frag_bytes_count;
+    bool has_file_header;
 
     // Interior pages only
     uint32_t end;
 
 } PageHeader;
-
-/**
- * Read page header
- *
- * @param file File to read
- * @param page_size Database page size
- * @param page Database page number (zero-indexed)
- * @param header [out] Page header
- * @return Status Code
- */
-int page_header_read(FILE *file, const uint16_t page_size, const size_t page, PageHeader *header);
 
 #endif
