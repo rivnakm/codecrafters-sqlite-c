@@ -167,10 +167,30 @@ int read_record_data(const uint8_t *payload, const RecordHeader *header, Column 
     return EXIT_SUCCESS;
 }
 
+void record_free(Record *record)
+{
+    if (!record)
+    {
+        return;
+    }
+
+    for (size_t i = 0; i < record->header.count; i++)
+    {
+        record_data_free(record->columns[i].data);
+    }
+
+    free(record->columns);
+    record->columns = NULL;
+
+    record_header_free(&record->header);
+}
+
 void record_data_free(ColumnData *data)
 {
     if (!data)
+    {
         return;
+    }
 
     switch (data->data_type)
     {
@@ -197,4 +217,14 @@ void record_data_free(ColumnData *data)
     }
 
     free(data);
+}
+
+void record_header_free(RecordHeader *header)
+{
+    if (!header)
+    {
+        return;
+    }
+
+    free(header->columns);
 }

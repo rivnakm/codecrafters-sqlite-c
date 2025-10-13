@@ -60,10 +60,6 @@ int read_cell_payload(FILE *file, const uint16_t cell_pointer, const PageType pa
     }
 
     *data = (uint8_t *)malloc(sizeof(uint8_t) * header.payload_size);
-    if (*data == NULL)
-    {
-        return EXIT_FAILURE;
-    }
 
     if (header.overflow_page == 0)
     {

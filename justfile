@@ -1,8 +1,8 @@
 format:
     clang-format -i --verbose $(fd '.*\.[ch]' .)
 
-build:
-    cmake -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=True, -DENABLE_UBSAN=True -DBUILD_TESTS=True .
+build preset="debug":
+    cmake --preset={{ preset }} .
     ninja -C build
 
 test: build

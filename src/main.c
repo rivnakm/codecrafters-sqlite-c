@@ -109,12 +109,9 @@ int main(int argc, char *argv[])
 
         for (size_t i = 0; i < records_count; i++)
         {
-            for (size_t j = 0; j < records[i].header.count; j++)
-            {
-                record_data_free(records[i].columns[i].data);
-                records[i].columns[i].data = NULL;
-            }
+            record_free(&records[i]);
         }
+        free(records);
         records = NULL;
     }
 

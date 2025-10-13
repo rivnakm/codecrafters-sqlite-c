@@ -81,10 +81,24 @@ int read_record_header(const uint8_t *payload, const size_t payload_size, Record
 int read_record_data(const uint8_t *payload, const RecordHeader *header, Column *columns);
 
 /**
+ * Free record
+ *
+ * @param record Record
+ */
+void record_free(Record *record);
+
+/**
  * Free record data
  *
  * @param data Record data
  */
 void record_data_free(ColumnData *data);
+
+/**
+ * Free record header
+ *
+ * @param header Record header
+ */
+void record_header_free(RecordHeader *header);
 
 #endif

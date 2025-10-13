@@ -81,7 +81,13 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
         }
 
         (*records)[(*count)++] = (Record){.header = record_header, .columns = columns};
+
+        free(cell_payload);
     }
+
+    free(cell_pointers);
+    cell_pointers = NULL;
+
     return EXIT_SUCCESS;
 }
 
@@ -127,8 +133,7 @@ int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *coun
     for (size_t i = 0; i < records_count; i++)
     {
         Record *record = &records[i];
-        record_data_free(record->columns[i].data);
-        record->columns[i].data = NULL;
+        record_free(record);
     }
     free(records);
 
@@ -147,7 +152,7 @@ int db_get_table_names(const Database *db, char **names[], size_t *count)
         return err;
     }
 
-    *names = (char **)malloc(sizeof(char *) * *count);
+    *names = (char **)malloc(sizeof(char *) * rows_count);
     for (size_t i = 0; i < rows_count; i++)
     {
         char *pos = strstr(rows[i].table_name, "sqlite_");
