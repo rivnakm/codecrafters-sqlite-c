@@ -1,13 +1,16 @@
 #include "cc_sqlite/bytes.h"
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void to_be_bytes(uint8_t *dest, const uint64_t value, const size_t n)
 {
     for (size_t i = 0; i < n; i++)
     {
         size_t offset = (n - 1 - i) * 8;
+        assert(offset < 64);
         dest[i] = (value >> offset) & 0xFF;
     }
 }
@@ -20,10 +23,9 @@ void to_signed_be_bytes(uint8_t *dest, const int64_t value, const size_t n)
         return;
     }
 
-    uint64_t twos_comp = (uint64_t)value;
+    uint64_t twos_comp = (uint64_t)labs(value);
     twos_comp = ~twos_comp;
     twos_comp++;
-    twos_comp |= (0x80 << (n - 1));
     to_be_bytes(dest, twos_comp, n);
 }
 

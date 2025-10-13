@@ -30,5 +30,6 @@ void schema_row_free(SchemaRow *row)
 {
     free(row->name);
     free(row->table_name);
-    row = NULL;
+    row->name = NULL;
+    row->table_name = NULL;
 }

@@ -1,6 +1,7 @@
 #include "varint_test.h"
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "cc_sqlite/varint.h"
 

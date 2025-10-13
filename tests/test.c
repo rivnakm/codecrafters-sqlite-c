@@ -3,6 +3,7 @@
 #include "bytes_test.h"
 #include "file_header_test.h"
 #include "varint_test.h"
+#include "command_tests/dbinfo_test.h"
 
 static char *varint_value_params[] = {"0x0",
                                       "0x100",
@@ -37,12 +38,24 @@ static MunitTest all_tests[] = {
      MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/to_signed_be_bytes/negative", bytes_test_to_signed_be_bytes_negative, NULL, NULL,
      MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"/bytes/to_signed_be_bytes/int64min", bytes_test_to_signed_be_bytes_int64min, NULL, NULL,
+     MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"/bytes/to_signed_be_bytes/int64max", bytes_test_to_signed_be_bytes_int64max, NULL, NULL,
+     MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/from_be_bytes", bytes_test_from_be_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/from_signed_be_bytes/positive", bytes_test_from_signed_be_bytes_positive, NULL, NULL,
      MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/from_signed_be_bytes/negative", bytes_test_from_signed_be_bytes_negative, NULL, NULL,
      MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"/bytes/from_signed_be_bytes/int64min", bytes_test_from_signed_be_bytes_int64min, NULL, NULL,
+     MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"/bytes/from_signed_be_bytes/int64max", bytes_test_from_signed_be_bytes_int64max, NULL, NULL,
+     MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/file_header/file_header_read", file_header_test_file_header_read, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     NULL},
+    {(char *)"/commands/dbinfo/dbinfo_page_size", commands_dbinfo_test_page_size, NULL, NULL, MUNIT_TEST_OPTION_NONE,
+     NULL},
+    {(char *)"/commands/dbinfo/dbinfo_num_tables", commands_dbinfo_test_num_tables, NULL, NULL, MUNIT_TEST_OPTION_NONE,
      NULL},
     {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
 };

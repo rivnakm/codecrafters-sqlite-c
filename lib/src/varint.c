@@ -1,5 +1,6 @@
 #include "cc_sqlite/varint.h"
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -7,6 +8,7 @@
 #include "cc_sqlite/bytes.h"
 
 #define VARINT_MAX_BYTES (9)
+#define INT64_WIDTH_BYTES (8)
 
 size_t read_varint(const uint8_t *buf, int64_t *value)
 {
@@ -34,9 +36,9 @@ size_t read_varint(const uint8_t *buf, int64_t *value)
         }
     }
 
-    uint8_t twos_comp[INT64_WIDTH] = {0};
-    to_be_bytes(twos_comp, temp, INT64_WIDTH);
-    *value = from_signed_be_bytes(twos_comp, INT64_WIDTH);
+    uint8_t twos_comp[INT64_WIDTH_BYTES] = {0};
+    to_be_bytes(twos_comp, temp, INT64_WIDTH_BYTES);
+    *value = from_signed_be_bytes(twos_comp, INT64_WIDTH_BYTES);
 
     return len;
 }
@@ -49,10 +51,10 @@ size_t write_varint(uint8_t *buf, const int64_t value)
         return 1;
     }
 
-    uint8_t twos_comp[INT64_WIDTH] = {0};
-    to_signed_be_bytes(twos_comp, value, INT64_WIDTH);
+    uint8_t twos_comp[INT64_WIDTH_BYTES] = {0};
+    to_signed_be_bytes(twos_comp, value, INT64_WIDTH_BYTES);
 
-    uint64_t temp = from_be_bytes(twos_comp, INT64_WIDTH);
+    uint64_t temp = from_be_bytes(twos_comp, INT64_WIDTH_BYTES);
 
     size_t digits = 0;
     for (uint64_t v = temp; v > 0; v >>= 1)
@@ -63,14 +65,13 @@ size_t write_varint(uint8_t *buf, const int64_t value)
     size_t len = 0;
     if (digits > 56)
     {
-        fprintf(stderr, "Using the full 9 bytes\n");
+        assert(digits <= 64);
         // Need all 9 bytes
         buf[8] = (uint8_t)temp & 0xFF;
         temp >>= 8;
         for (size_t i = 7;; i--)
         {
             buf[i] = ((uint8_t)temp & 0x7F) | 0x80;
-            digits -= 7;
             temp >>= 7;
 
             if (i == 0)

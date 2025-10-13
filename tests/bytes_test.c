@@ -27,6 +27,8 @@ MunitResult bytes_test_to_signed_be_bytes_positive(const MunitParameter params[]
 
     to_signed_be_bytes(buffer, value, 2);
 
+    munit_assert_memory_equal(2, buffer, expected);
+
     return MUNIT_OK;
 }
 
@@ -38,6 +40,36 @@ MunitResult bytes_test_to_signed_be_bytes_negative(const MunitParameter params[]
     uint8_t buffer[2] = {0};
 
     to_signed_be_bytes(buffer, value, 2);
+
+    munit_assert_memory_equal(2, buffer, expected);
+
+    return MUNIT_OK;
+}
+
+MunitResult bytes_test_to_signed_be_bytes_int64min(const MunitParameter params[], void *data)
+{
+    int64_t value = INT64_MIN;
+    uint8_t expected[8] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+    uint8_t buffer[8] = {0};
+
+    to_signed_be_bytes(buffer, value, 8);
+
+    munit_assert_memory_equal(8, buffer, expected);
+
+    return MUNIT_OK;
+}
+
+MunitResult bytes_test_to_signed_be_bytes_int64max(const MunitParameter params[], void *data)
+{
+    int64_t value = INT64_MAX;
+    uint8_t expected[8] = {0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
+    uint8_t buffer[8] = {0};
+
+    to_signed_be_bytes(buffer, value, 8);
+
+    munit_assert_memory_equal(8, buffer, expected);
 
     return MUNIT_OK;
 }
@@ -72,6 +104,30 @@ MunitResult bytes_test_from_signed_be_bytes_negative(const MunitParameter params
     uint8_t buffer[2] = {0xA6, 0xA0};
 
     int64_t value = from_signed_be_bytes(buffer, 2);
+
+    munit_assert_int64(value, ==, expected);
+
+    return MUNIT_OK;
+}
+
+MunitResult bytes_test_from_signed_be_bytes_int64min(const MunitParameter params[], void *data)
+{
+    int64_t expected = INT64_MIN;
+    uint8_t buffer[8] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+    int64_t value = from_signed_be_bytes(buffer, 8);
+
+    munit_assert_int64(value, ==, expected);
+
+    return MUNIT_OK;
+}
+
+MunitResult bytes_test_from_signed_be_bytes_int64max(const MunitParameter params[], void *data)
+{
+    int64_t expected = INT64_MAX;
+    uint8_t buffer[8] = {0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
+    int64_t value = from_signed_be_bytes(buffer, 8);
 
     munit_assert_int64(value, ==, expected);
 

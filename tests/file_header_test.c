@@ -10,6 +10,7 @@ MunitResult file_header_test_file_header_read(const MunitParameter params[], voi
     FILE *file = fopen(EXAMPLES_DIR "/empty.db", "rb");
     if (!file)
     {
+        fprintf(stderr, "Failed to open file: %s\n", EXAMPLES_DIR "/sample.db");
         return MUNIT_FAIL;
     }
 

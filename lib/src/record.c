@@ -167,19 +167,6 @@ int read_record_data(const uint8_t *payload, const RecordHeader *header, Column 
     return EXIT_SUCCESS;
 }
 
-void record_free(Record *record)
-{
-    if (!record)
-        return;
-
-    for (size_t i = 0; i < record->header.count; i++)
-    {
-        record_data_free(record->columns[i].data);
-        record->columns[i].data = NULL;
-    }
-    free(record);
-}
-
 void record_data_free(ColumnData *data)
 {
     if (!data)

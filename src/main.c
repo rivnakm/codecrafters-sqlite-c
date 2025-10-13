@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "cc_sqlite.h"
+#include "cc_sqlite/commands/dbinfo.h"
 #include "cc_sqlite/database.h"
 #include "cc_sqlite/page_header.h"
 #include "cc_sqlite/record.h"
@@ -38,15 +39,7 @@ int main(int argc, char *argv[])
 
     if (strcmp(command, ".dbinfo") == 0)
     {
-        PageHeader page_header;
-        err = db_get_page_header(&db, 0, &page_header);
-        if (err != EXIT_SUCCESS)
-        {
-            fprintf(stderr, "Failed to load database\n");
-            return err;
-        }
-        printf("database page size: %u\n", db.file_header.page_size);
-        printf("number of tables: %u\n", page_header.cell_count);
+        cmd_dbinfo(&db);
     }
     else if (strcmp(command, ".tables") == 0)
     {
