@@ -11,6 +11,8 @@
 #include "cc_sqlite/record.h"
 #include "cc_sqlite/schema/row.h"
 
+#define ARENA_SIZE_MULTIPLIER (512)
+
 int main(int argc, char *argv[])
 {
     if (argc != 3)
@@ -43,9 +45,11 @@ int main(int argc, char *argv[])
     }
     else if (strcmp(command, ".tables") == 0)
     {
+        Arena *arena = arena_create(db.file_header.page_size * ARENA_SIZE_MULTIPLIER);
+        
         char **names = NULL;
         size_t count;
-        err = db_get_table_names(&db, &names, &count);
+        err = db_get_table_names(&db, &names, &count, arena);
         if (err != EXIT_SUCCESS)
         {
             fprintf(stderr, "Failed to read table names\n");
@@ -62,12 +66,14 @@ int main(int argc, char *argv[])
             {
                 printf("%s\n", names[i]);
             }
-            free(names[i]);
         }
-        free(names);
+        
+        arena_destroy(arena);
     }
     else
     {
+        Arena *arena = arena_create(db.file_header.page_size * ARENA_SIZE_MULTIPLIER);
+        
         // assume "SELECT COUNT(*) FROM tablename"
         char *sql_command = (char *)malloc(strlen(command) + 1);
         strcpy(sql_command, command);
@@ -79,7 +85,7 @@ int main(int argc, char *argv[])
         }
 
         SchemaRow row;
-        err = db_get_table_by_name(&db, token, &row);
+        err = db_get_table_by_name(&db, token, &row, arena);
         if (err != EXIT_SUCCESS)
         {
             fprintf(stderr, "Failed to find table by name\n");
@@ -98,7 +104,7 @@ int main(int argc, char *argv[])
 
         Record *records = NULL;
         size_t records_count = 0;
-        err = db_get_table_records(&db, &page_header, &records, &records_count);
+        err = db_get_table_records(&db, &page_header, &records, &records_count, arena);
         if (err != EXIT_SUCCESS)
         {
             fprintf(stderr, "Failed to read table records\n");
@@ -107,12 +113,7 @@ int main(int argc, char *argv[])
 
         printf("%zu\n", records_count);
 
-        for (size_t i = 0; i < records_count; i++)
-        {
-            record_free(&records[i]);
-        }
-        free(records);
-        records = NULL;
+        arena_destroy(arena);
     }
 
     fclose(database_file);

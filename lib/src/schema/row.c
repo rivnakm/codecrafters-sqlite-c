@@ -1,6 +1,5 @@
 #include "cc_sqlite/schema/row.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 SchemaRowType str_to_row_type(const char *str)
@@ -24,12 +23,4 @@ SchemaRowType str_to_row_type(const char *str)
     }
 
     return row_type;
-}
-
-void schema_row_free(SchemaRow *row)
-{
-    free(row->name);
-    free(row->table_name);
-    row->name = NULL;
-    row->table_name = NULL;
 }

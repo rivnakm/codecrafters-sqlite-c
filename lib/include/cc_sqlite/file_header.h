@@ -10,6 +10,7 @@ typedef struct
 {
     uint16_t page_size;
     uint8_t reserved;
+    uint32_t suggested_cache_size;
 } FileHeader;
 
 /**

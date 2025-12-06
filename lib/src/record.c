@@ -1,15 +1,17 @@
 #include "cc_sqlite/record.h"
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "cc_sqlite/alloc.h"
 #include "cc_sqlite/bytes.h"
 #include "cc_sqlite/varint.h"
 
-int read_record_header(const uint8_t *payload, const size_t payload_size, RecordHeader *header)
+int read_record_header(const uint8_t *payload, const size_t payload_size, RecordHeader *header, Arena *const arena)
 {
     size_t buf_position = 0;
 
@@ -99,7 +101,10 @@ int read_record_header(const uint8_t *payload, const size_t payload_size, Record
         }
     }
 
-    columns = realloc(columns, sizeof(ColumnHeader) * columns_count);
+    ColumnHeader *old_columns = columns;
+    columns = arena_alloc(arena, sizeof(ColumnHeader) * columns_count, _Alignof(ColumnHeader));
+    memcpy(columns, old_columns, sizeof(ColumnHeader) * columns_count);
+    free(old_columns);
 
     header->columns = columns;
     header->count = columns_count;
@@ -108,12 +113,14 @@ int read_record_header(const uint8_t *payload, const size_t payload_size, Record
     return EXIT_SUCCESS;
 }
 
-int read_record_data(const uint8_t *payload, const RecordHeader *header, Column *columns)
+int read_record_data(const uint8_t *payload, const size_t payload_length, const RecordHeader *header, Column *columns, Arena *const arena)
 {
-    size_t position = header->length;
+    ptrdiff_t position = header->length;
     for (size_t i = 0; i < header->count; i++)
     {
         ColumnHeader *current = &header->columns[i];
+        assert(position + current->data_length <= payload_length);
+        
         ColumnValue value;
         switch (current->data_type)
         {
@@ -146,17 +153,17 @@ int read_record_data(const uint8_t *payload, const RecordHeader *header, Column 
             fprintf(stderr, "Unsupported: internal data type\n");
             exit(-1);
         case COL_DATA_TYPE_BLOB:
-            value.blob = (uint8_t *)malloc(sizeof(uint8_t) * current->data_length);
+            value.blob = (uint8_t *)arena_alloc(arena, sizeof(uint8_t) * current->data_length, _Alignof(uint8_t));
             memcpy(value.blob, payload + position, current->data_length);
             break;
         case COL_DATA_TYPE_TEXT:
-            value.text = (char *)malloc(sizeof(char) * (current->data_length + 1));
+            value.text = (char *)arena_alloc(arena, sizeof(char) * (current->data_length + 1), _Alignof(char));
             memcpy(value.text, payload + position, current->data_length);
             value.text[current->data_length] = '\0';
             break;
         }
 
-        ColumnData *data = (ColumnData *)malloc(sizeof(ColumnData));
+        ColumnData *data = (ColumnData *)arena_alloc(arena, sizeof(ColumnData), _Alignof(ColumnData));
         *data = (ColumnData){.data_type = current->data_type, .data_length = current->data_length, .value = value};
 
         columns[i] = (Column){.header = *current, .data = data};
@@ -165,66 +172,4 @@ int read_record_data(const uint8_t *payload, const RecordHeader *header, Column 
     }
 
     return EXIT_SUCCESS;
-}
-
-void record_free(Record *record)
-{
-    if (!record)
-    {
-        return;
-    }
-
-    for (size_t i = 0; i < record->header.count; i++)
-    {
-        record_data_free(record->columns[i].data);
-    }
-
-    free(record->columns);
-    record->columns = NULL;
-
-    record_header_free(&record->header);
-}
-
-void record_data_free(ColumnData *data)
-{
-    if (!data)
-    {
-        return;
-    }
-
-    switch (data->data_type)
-    {
-    case COL_DATA_TYPE_BLOB:
-        if (!data->value.blob)
-        {
-            return;
-        }
-        free(data->value.blob);
-        data->value.blob = NULL;
-
-        break;
-    case COL_DATA_TYPE_TEXT:
-        if (!data->value.text)
-        {
-            return;
-        }
-        free(data->value.text);
-        data->value.text = NULL;
-
-        break;
-    default:
-        break;
-    }
-
-    free(data);
-}
-
-void record_header_free(RecordHeader *header)
-{
-    if (!header)
-    {
-        return;
-    }
-
-    free(header->columns);
 }

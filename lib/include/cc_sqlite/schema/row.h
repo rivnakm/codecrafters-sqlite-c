@@ -27,11 +27,4 @@ typedef struct
  */
 SchemaRowType str_to_row_type(const char *str);
 
-/**
- * Free heap allocated struct members
- *
- * @param row Schema row
- */
-void schema_row_free(SchemaRow *row);
-
 #endif

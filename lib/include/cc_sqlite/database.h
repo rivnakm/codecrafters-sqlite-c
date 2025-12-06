@@ -31,7 +31,7 @@ int db_open(FILE *file, Database *db);
  * @param count [out] Number of table rows
  * @return Status code
  */
-int db_get_table_records(const Database *db, const PageHeader *page_header, Record *records[], size_t *count);
+int db_get_table_records(const Database *db, const PageHeader *page_header, Record *records[], size_t *count, Arena *const arena);
 
 /**
  * Get schema table rows
@@ -41,7 +41,7 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
  * @param count [out] Number of table rows
  * @return Status code
  */
-int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *count);
+int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *count, Arena *const arena);
 
 /**
  * Get table names
@@ -51,7 +51,7 @@ int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *coun
  * @param count [out] Number of table rows
  * @return Status code
  */
-int db_get_table_names(const Database *db, char **names[], size_t *count);
+int db_get_table_names(const Database *db, char **names[], size_t *count, Arena *const arena);
 
 /**
  * Get the schema row for the provided table name
@@ -61,7 +61,7 @@ int db_get_table_names(const Database *db, char **names[], size_t *count);
  * @param row [out] Schema row
  * @return Status code
  */
-int db_get_table_by_name(const Database *db, const char *table_name, SchemaRow *row);
+int db_get_table_by_name(const Database *db, const char *table_name, SchemaRow *row, Arena *const arena);
 
 /**
  * Get page header

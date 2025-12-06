@@ -23,7 +23,7 @@ int db_open(FILE *file, Database *db)
     return EXIT_SUCCESS;
 }
 
-int db_get_table_records(const Database *db, const PageHeader *page_header, Record **records, size_t *count)
+int db_get_table_records(const Database *db, const PageHeader *page_header, Record **records, size_t *count, Arena *const arena)
 {
     *count = 0;
 
@@ -32,7 +32,7 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
 
     // cell pointers come right after the page header
     // file header is 100 bytes on page 1 only, otherwise 0
-    size_t cell_pointers_offset = 100;
+    size_t cell_pointers_offset = page_header->has_file_header ? 100 : 0;
     if (page_header->type == PAGE_TYPE_INTERIOR_TABLE || page_header->type == PAGE_TYPE_INTERIOR_INDEX)
     {
         cell_pointers_offset += 12;
@@ -42,7 +42,7 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
         cell_pointers_offset += 8;
     }
     fseek(db->file, cell_pointers_offset, SEEK_SET);
-    uint16_t *cell_pointers = (uint16_t *)malloc(sizeof(uint16_t) * page_header->cell_count);
+    uint16_t *cell_pointers = (uint16_t *)arena_alloc(arena, sizeof(uint16_t) * page_header->cell_count, _Alignof(uint16_t));
     for (size_t i = 0; i < page_header->cell_count; i++)
     {
         uint8_t buffer[2];
@@ -51,7 +51,7 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
     }
 
     size_t cell_count = page_header->cell_count;
-    *records = (Record *)malloc(sizeof(Record) * cell_count);
+    *records = (Record *)arena_alloc(arena, sizeof(Record) * cell_count, _Alignof(Record));
     for (size_t i = 0; i < cell_count; i++)
     {
         uint16_t cell_pointer = cell_pointers[i];
@@ -59,39 +59,33 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
         uint8_t *cell_payload;
         size_t cell_payload_size;
         if (read_cell_payload(db->file, cell_pointer, page_header->type, usable_page_size, &cell_payload,
-                              &cell_payload_size) != EXIT_SUCCESS)
+                              &cell_payload_size, arena) != EXIT_SUCCESS)
         {
             fprintf(stderr, "Failed to read cell payload\n");
             return 1;
         }
 
         RecordHeader record_header;
-        if (read_record_header(cell_payload, cell_payload_size, &record_header) != EXIT_SUCCESS)
+        if (read_record_header(cell_payload, cell_payload_size, &record_header, arena) != EXIT_SUCCESS)
         {
             fprintf(stderr, "Failed to read record header\n");
             return 1;
         }
 
-        Column *columns = (Column *)malloc(sizeof(Column) * record_header.count);
-        if (read_record_data(cell_payload, &record_header, columns) != EXIT_SUCCESS)
+        Column *columns = (Column *)arena_alloc(arena, sizeof(Column) * record_header.count, _Alignof(Column));
+        if (read_record_data(cell_payload, cell_payload_size, &record_header, columns, arena) != EXIT_SUCCESS)
         {
-            free(columns);
             fprintf(stderr, "Failed to read record data\n");
             return 1;
         }
 
         (*records)[(*count)++] = (Record){.header = record_header, .columns = columns};
-
-        free(cell_payload);
     }
-
-    free(cell_pointers);
-    cell_pointers = NULL;
 
     return EXIT_SUCCESS;
 }
 
-int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *count)
+int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *count, Arena *const arena)
 {
     *count = 0;
     PageHeader page_header;
@@ -103,13 +97,13 @@ int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *coun
 
     Record *records = NULL;
     size_t records_count;
-    err = db_get_table_records(db, &page_header, &records, &records_count);
+    err = db_get_table_records(db, &page_header, &records, &records_count, arena);
     if (err != EXIT_SUCCESS)
     {
         return EXIT_FAILURE;
     }
 
-    *rows = (SchemaRow *)malloc(sizeof(SchemaRow) * records_count);
+    *rows = (SchemaRow *)arena_alloc(arena, sizeof(SchemaRow) * records_count, _Alignof(SchemaRow));
     for (size_t i = 0; i < records_count; i++)
     {
         Column *columns = records[i].columns;
@@ -120,8 +114,8 @@ int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *coun
         const size_t rootpage_col = 3;
 
         char *type_str = columns[type_col].data->value.text;
-        char *row_name = strdup(columns[name_col].data->value.text);
-        char *row_table_name = strdup(columns[tbl_name_col].data->value.text);
+        char *row_name = arena_strdup(arena, columns[name_col].data->value.text);
+        char *row_table_name = arena_strdup(arena, columns[tbl_name_col].data->value.text);
 
         SchemaRowType row_type = str_to_row_type(type_str);
 
@@ -133,51 +127,45 @@ int db_get_schema_table_rows(const Database *db, SchemaRow *rows[], size_t *coun
     for (size_t i = 0; i < records_count; i++)
     {
         Record *record = &records[i];
-        record_free(record);
     }
-    free(records);
 
     return EXIT_SUCCESS;
 }
 
-int db_get_table_names(const Database *db, char **names[], size_t *count)
+int db_get_table_names(const Database *db, char **names[], size_t *count, Arena *const arena)
 {
     *count = 0;
 
     SchemaRow *rows;
     size_t rows_count;
-    int err = db_get_schema_table_rows(db, &rows, &rows_count);
+    int err = db_get_schema_table_rows(db, &rows, &rows_count, arena);
     if (err != EXIT_SUCCESS)
     {
         return err;
     }
 
-    *names = (char **)malloc(sizeof(char *) * rows_count);
+    *names = (char **)arena_alloc(arena, sizeof(char *) * rows_count, _Alignof(char *));
     for (size_t i = 0; i < rows_count; i++)
     {
         char *pos = strstr(rows[i].table_name, "sqlite_");
         if (pos && (pos - rows[i].table_name) == 0)
         {
-            schema_row_free(&rows[i]);
             continue;
         }
 
         (*names)[(*count)++] = strdup(rows[i].table_name);
-        schema_row_free(&rows[i]);
     }
-
-    free(rows);
 
     return EXIT_SUCCESS;
 }
 
-int db_get_table_by_name(const Database *db, const char *table_name, SchemaRow *row)
+int db_get_table_by_name(const Database *db, const char *table_name, SchemaRow *row, Arena *const arena)
 {
     bool found = false;
 
     SchemaRow *rows;
     size_t rows_count;
-    int err = db_get_schema_table_rows(db, &rows, &rows_count);
+    int err = db_get_schema_table_rows(db, &rows, &rows_count, arena);
     if (err != EXIT_SUCCESS)
     {
         fprintf(stderr, "Failed to get schema table rows\n");
@@ -188,15 +176,12 @@ int db_get_table_by_name(const Database *db, const char *table_name, SchemaRow *
     {
         if (strcmp(rows[i].table_name, table_name) != 0)
         {
-            schema_row_free(&rows[i]);
             continue;
         }
 
         found = true;
         *row = rows[i];
     }
-
-    free(rows);
 
     if (!found)
     {

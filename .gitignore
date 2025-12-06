@@ -68,3 +68,6 @@ vcpkg-manifest-install.log
 
 # CLion
 .idea/
+
+# ImHex project files
+*.hexproj

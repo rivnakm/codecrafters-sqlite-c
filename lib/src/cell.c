@@ -43,7 +43,7 @@ uint16_t non_overflowing_payload_len(const uint16_t usable_page_size, const uint
 // -----------
 
 int read_cell_payload(FILE *file, const uint16_t cell_pointer, const PageType page_type,
-                      const uint16_t usable_page_size, uint8_t **data, size_t *size)
+                      const uint16_t usable_page_size, uint8_t **data, size_t *size, Arena *const arena)
 {
     CellHeader header;
     int err = cell_header_read(file, cell_pointer, page_type, usable_page_size, &header);
@@ -59,7 +59,7 @@ int read_cell_payload(FILE *file, const uint16_t cell_pointer, const PageType pa
         return err;
     }
 
-    *data = (uint8_t *)malloc(sizeof(uint8_t) * header.payload_size);
+    *data = (uint8_t *)arena_alloc(arena, sizeof(uint8_t) * header.payload_size, _Alignof(uint8_t));
 
     if (header.overflow_page == 0)
     {

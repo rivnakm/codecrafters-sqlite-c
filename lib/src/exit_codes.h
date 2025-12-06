@@ -1,0 +1,6 @@
+#ifndef CC_SQLITE_IMPL_EXIT_CODES_H
+#define CC_SQLITE_IMPL_EXIT_CODES_H
+
+#define EXIT_ALLOCATION_ERROR 2
+
+#endif 

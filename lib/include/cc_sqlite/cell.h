@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "cc_sqlite/alloc.h"
 #include "cc_sqlite/page_header.h"
 
 /**
@@ -18,6 +19,6 @@
  * @return Status code
  */
 int read_cell_payload(FILE *file, const uint16_t cell_pointer, const PageType page_type,
-                      const uint16_t usable_page_size, uint8_t **data, size_t *size);
+                      const uint16_t usable_page_size, uint8_t **data, size_t *size, Arena *const arena);
 
 #endif

@@ -31,6 +31,11 @@ void to_signed_be_bytes(uint8_t *dest, const int64_t value, const size_t n)
 
 uint64_t from_be_bytes(const uint8_t *src, const size_t n)
 {
+    if (n == 0)
+    {
+        return 0;
+    }
+
     uint64_t value = 0;
     for (size_t i = 0; i < n; i++)
     {
@@ -43,6 +48,11 @@ uint64_t from_be_bytes(const uint8_t *src, const size_t n)
 
 int64_t from_signed_be_bytes(const uint8_t *src, const size_t n)
 {
+    if (n == 0)
+    {
+        return 0;
+    }
+
     uint64_t value = src[0];
     bool positive = (value & 0x80) == 0;
 
