@@ -23,16 +23,15 @@ int db_open(FILE *file, Database *db)
     return EXIT_SUCCESS;
 }
 
-int db_get_table_records(const Database *db, const PageHeader *page_header, Record **records, size_t *count, Arena *const arena)
+int db_get_table_records(const Database *db, const PageHeader *page_header, Record **records, size_t *count,
+                         Arena *const arena)
 {
     *count = 0;
-
-    uint16_t usable_page_size = db->file_header.page_size - db->file_header.reserved -
-                                (page_header->has_file_header ? 100 : 0); // first page has the db file header
 
     // cell pointers come right after the page header
     // file header is 100 bytes on page 1 only, otherwise 0
     size_t cell_pointers_offset = page_header->has_file_header ? 100 : 0;
+    uint16_t usable_page_size = db->file_header.page_size - db->file_header.reserved - cell_pointers_offset;
     if (page_header->type == PAGE_TYPE_INTERIOR_TABLE || page_header->type == PAGE_TYPE_INTERIOR_INDEX)
     {
         cell_pointers_offset += 12;
@@ -42,7 +41,8 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
         cell_pointers_offset += 8;
     }
     fseek(db->file, cell_pointers_offset, SEEK_SET);
-    uint16_t *cell_pointers = (uint16_t *)arena_alloc(arena, sizeof(uint16_t) * page_header->cell_count, _Alignof(uint16_t));
+    uint16_t *cell_pointers =
+        (uint16_t *)arena_alloc(arena, sizeof(uint16_t) * page_header->cell_count, _Alignof(uint16_t));
     for (size_t i = 0; i < page_header->cell_count; i++)
     {
         uint8_t buffer[2];
@@ -56,7 +56,7 @@ int db_get_table_records(const Database *db, const PageHeader *page_header, Reco
     {
         uint16_t cell_pointer = cell_pointers[i];
 
-        uint8_t *cell_payload;
+        uint8_t *cell_payload = NULL;
         size_t cell_payload_size;
         if (read_cell_payload(db->file, cell_pointer, page_header->type, usable_page_size, &cell_payload,
                               &cell_payload_size, arena) != EXIT_SUCCESS)

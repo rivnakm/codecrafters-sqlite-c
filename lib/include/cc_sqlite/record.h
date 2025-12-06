@@ -80,6 +80,7 @@ int read_record_header(const uint8_t *payload, const size_t payload_size, Record
  * @param columns [out] Record columns
  * @return Status code
  */
-int read_record_data(const uint8_t *payload, const size_t payload_length, const RecordHeader *header, Column *columns, Arena *const arena);
+int read_record_data(const uint8_t *payload, const size_t payload_length, const RecordHeader *header, Column *columns,
+                     Arena *const arena);
 
 #endif

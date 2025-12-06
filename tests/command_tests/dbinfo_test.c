@@ -9,7 +9,8 @@
 MunitResult commands_dbinfo_test_page_size(const MunitParameter params[], void *user_data)
 {
     FILE *file = fopen(EXAMPLES_DIR "/sample.db", "rb");
-    if (!file) {
+    if (!file)
+    {
         fprintf(stderr, "Failed to open file: %s\n", EXAMPLES_DIR "/sample.db");
         return MUNIT_FAIL;
     }
@@ -38,7 +39,8 @@ MunitResult commands_dbinfo_test_page_size(const MunitParameter params[], void *
 MunitResult commands_dbinfo_test_num_tables(const MunitParameter params[], void *user_data)
 {
     FILE *file = fopen(EXAMPLES_DIR "/sample.db", "rb");
-    if (!file) {
+    if (!file)
+    {
         fprintf(stderr, "Failed to open file: %s\n", EXAMPLES_DIR "/sample.db");
         return MUNIT_FAIL;
     }

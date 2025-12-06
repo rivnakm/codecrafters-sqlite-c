@@ -1,7 +1,9 @@
 #include "cc_sqlite/commands/dbinfo.h"
+
 #include <stdlib.h>
 
-void cmd_dbinfo(const Database *db) {
+void cmd_dbinfo(const Database *db)
+{
     DbInfo info;
     int err = get_dbinfo(db, &info);
     if (err != EXIT_SUCCESS)
@@ -14,7 +16,8 @@ void cmd_dbinfo(const Database *db) {
     printf("number of tables: %u\n", info.num_tables);
 }
 
-int get_dbinfo(const Database *db, DbInfo *info) {
+int get_dbinfo(const Database *db, DbInfo *info)
+{
     PageHeader page_header;
     int err = db_get_page_header(db, 0, &page_header);
     if (err != EXIT_SUCCESS)

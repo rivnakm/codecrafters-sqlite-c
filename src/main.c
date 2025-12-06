@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     else if (strcmp(command, ".tables") == 0)
     {
         Arena *arena = arena_create(db.file_header.page_size * ARENA_SIZE_MULTIPLIER);
-        
+
         char **names = NULL;
         size_t count;
         err = db_get_table_names(&db, &names, &count, arena);
@@ -67,13 +67,13 @@ int main(int argc, char *argv[])
                 printf("%s\n", names[i]);
             }
         }
-        
+
         arena_destroy(arena);
     }
     else
     {
         Arena *arena = arena_create(db.file_header.page_size * ARENA_SIZE_MULTIPLIER);
-        
+
         // assume "SELECT COUNT(*) FROM tablename"
         char *sql_command = (char *)malloc(strlen(command) + 1);
         strcpy(sql_command, command);

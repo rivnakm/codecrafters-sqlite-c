@@ -13,7 +13,7 @@
 size_t read_varint(const uint8_t *buf, int64_t *value)
 {
     size_t len = 0;
-    uint64_t temp = 0;
+    uint64_t temp = 0L;
     for (size_t i = 0; i < VARINT_MAX_BYTES; i++)
     {
         len++;

@@ -3,9 +3,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include "cc_sqlite/database.h"
 
-typedef struct {
+typedef struct
+{
     uint16_t page_size;
     uint16_t num_tables;
 } DbInfo;

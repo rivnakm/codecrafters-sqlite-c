@@ -1,9 +1,9 @@
 #include <munit.h>
 
 #include "bytes_test.h"
+#include "command_tests/dbinfo_test.h"
 #include "file_header_test.h"
 #include "varint_test.h"
-#include "command_tests/dbinfo_test.h"
 
 static char *varint_value_params[] = {"0x0",
                                       "0x100",
@@ -34,6 +34,7 @@ static MunitTest all_tests[] = {
     {(char *)"/varint/write_varint/9_bytes", varint_test_write_varint_nine_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE,
      NULL},
     {(char *)"/bytes/to_be_bytes", bytes_test_to_be_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"/bytes/to_be_bytes_zero", bytes_test_to_be_bytes_zero, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/to_signed_be_bytes/positive", bytes_test_to_signed_be_bytes_positive, NULL, NULL,
      MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/to_signed_be_bytes/negative", bytes_test_to_signed_be_bytes_negative, NULL, NULL,
@@ -43,6 +44,7 @@ static MunitTest all_tests[] = {
     {(char *)"/bytes/to_signed_be_bytes/int64max", bytes_test_to_signed_be_bytes_int64max, NULL, NULL,
      MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/from_be_bytes", bytes_test_from_be_bytes, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char *)"/bytes/from_be_bytes_zero", bytes_test_from_be_bytes_zero, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/from_signed_be_bytes/positive", bytes_test_from_signed_be_bytes_positive, NULL, NULL,
      MUNIT_TEST_OPTION_NONE, NULL},
     {(char *)"/bytes/from_signed_be_bytes/negative", bytes_test_from_signed_be_bytes_negative, NULL, NULL,

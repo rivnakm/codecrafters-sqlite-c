@@ -30,7 +30,7 @@ int file_header_read(FILE *file, FileHeader *header)
     assert_fpos(file, 0x14L);
     fread(buffer, sizeof(uint8_t), 1, file);
     header->reserved = buffer[0];
-    
+
     fseek(file, 48, SEEK_SET);
     assert_fpos(file, 0x30L);
     fread(buffer, sizeof(uint8_t), 4, file);

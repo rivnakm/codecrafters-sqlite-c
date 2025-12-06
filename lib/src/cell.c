@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "cc_sqlite/bytes.h"
 #include "cc_sqlite/page_header.h"
@@ -60,6 +61,7 @@ int read_cell_payload(FILE *file, const uint16_t cell_pointer, const PageType pa
     }
 
     *data = (uint8_t *)arena_alloc(arena, sizeof(uint8_t) * header.payload_size, _Alignof(uint8_t));
+    memset(*data, 0, header.payload_size);
 
     if (header.overflow_page == 0)
     {
@@ -69,7 +71,12 @@ int read_cell_payload(FILE *file, const uint16_t cell_pointer, const PageType pa
             return err;
         }
 
-        fread(*data, sizeof(uint8_t), header.payload_size, file);
+        size_t bytes_read = fread(*data, sizeof(uint8_t), header.payload_size, file);
+        if (bytes_read != header.payload_size)
+        {
+            fprintf(stderr, "Failed to read cell payload\n");
+            return EXIT_FAILURE;
+        }
     }
     else
     {
@@ -108,6 +115,7 @@ int read_leaf_table_cell_header(FILE *file, CellHeader *header, const uint16_t u
 {
     const size_t bufsize = 18;
     uint8_t buf[bufsize];
+    memset(buf, 0, bufsize);
     fread(buf, sizeof(uint8_t), bufsize, file);
     // TODO: handle error
 
@@ -146,7 +154,7 @@ int read_leaf_table_cell_header(FILE *file, CellHeader *header, const uint16_t u
 
 int read_interior_table_cell_header(FILE *file, CellHeader *header)
 {
-    uint8_t buf[9];
+    uint8_t buf[9] = {0};
 
     header->length = 4;
     fread(buf, sizeof(uint8_t), 4, file);
@@ -163,6 +171,7 @@ int read_leaf_index_cell_header(FILE *file, CellHeader *header, const uint16_t u
 {
     const size_t bufsize = 9;
     uint8_t buf[bufsize];
+    memset(buf, 0, bufsize);
     fread(buf, sizeof(uint8_t), bufsize, file);
     // TODO: handle error
 
@@ -199,6 +208,7 @@ int read_interior_index_cell_header(FILE *file, CellHeader *header, const uint16
 {
     const size_t bufsize = 13;
     uint8_t buf[bufsize];
+    memset(buf, 0, bufsize);
     fread(buf, sizeof(uint8_t), bufsize, file);
     // TODO: handle error
 

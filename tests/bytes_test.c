@@ -18,6 +18,20 @@ MunitResult bytes_test_to_be_bytes(const MunitParameter params[], void *data)
     return MUNIT_OK;
 }
 
+MunitResult bytes_test_to_be_bytes_zero(const MunitParameter params[], void *data)
+{
+    uint64_t value = 0x0;
+    uint8_t expected[2] = {0x00, 0x00};
+
+    uint8_t buffer[2] = {0xF7}; // Dummy data to check the buffer is correctly initialized
+
+    to_be_bytes(buffer, value, 2);
+
+    munit_assert_memory_equal(2, buffer, expected);
+
+    return MUNIT_OK;
+}
+
 MunitResult bytes_test_to_signed_be_bytes_positive(const MunitParameter params[], void *data)
 {
     int64_t value = 0x5960;
@@ -80,6 +94,18 @@ MunitResult bytes_test_from_be_bytes(const MunitParameter params[], void *data)
     uint8_t buffer[3] = {0x12, 0x34, 0x56};
 
     uint64_t value = from_be_bytes(buffer, 3);
+
+    munit_assert_uint64(value, ==, expected);
+
+    return MUNIT_OK;
+}
+
+MunitResult bytes_test_from_be_bytes_zero(const MunitParameter params[], void *data)
+{
+    uint64_t expected = 0x0;
+    uint8_t buffer[2] = {0x00, 0x00};
+
+    uint64_t value = from_be_bytes(buffer, 2);
 
     munit_assert_uint64(value, ==, expected);
 

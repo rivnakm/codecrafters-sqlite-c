@@ -13,9 +13,17 @@
 
 int read_record_header(const uint8_t *payload, const size_t payload_size, RecordHeader *header, Arena *const arena)
 {
+    if (payload_size == 0)
+    {
+        header->columns = NULL;
+        header->count = 0;
+        header->length = 0;
+        return EXIT_SUCCESS;
+    }
+
     size_t buf_position = 0;
 
-    int64_t header_length;
+    int64_t header_length = 0;
     size_t varint_len = read_varint(payload, &header_length);
     buf_position += varint_len;
 
@@ -24,10 +32,11 @@ int read_record_header(const uint8_t *payload, const size_t payload_size, Record
     size_t columns_capacity = 10;
 
     columns = (ColumnHeader *)malloc(sizeof(ColumnHeader) * columns_capacity);
+    memset(columns, 0, sizeof(ColumnHeader) * columns_capacity);
 
     while (buf_position < (size_t)header_length)
     {
-        int64_t value;
+        int64_t value = 0;
         varint_len = read_varint(&(payload[buf_position]), &value);
         buf_position += varint_len;
 
@@ -113,14 +122,15 @@ int read_record_header(const uint8_t *payload, const size_t payload_size, Record
     return EXIT_SUCCESS;
 }
 
-int read_record_data(const uint8_t *payload, const size_t payload_length, const RecordHeader *header, Column *columns, Arena *const arena)
+int read_record_data(const uint8_t *payload, const size_t payload_length, const RecordHeader *header, Column *columns,
+                     Arena *const arena)
 {
     ptrdiff_t position = header->length;
     for (size_t i = 0; i < header->count; i++)
     {
         ColumnHeader *current = &header->columns[i];
         assert(position + current->data_length <= payload_length);
-        
+
         ColumnValue value;
         switch (current->data_type)
         {

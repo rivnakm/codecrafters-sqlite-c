@@ -3,4 +3,4 @@
 
 #define EXIT_ALLOCATION_ERROR 2
 
-#endif 
+#endif

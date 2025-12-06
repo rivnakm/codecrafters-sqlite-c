@@ -31,7 +31,8 @@ int db_open(FILE *file, Database *db);
  * @param count [out] Number of table rows
  * @return Status code
  */
-int db_get_table_records(const Database *db, const PageHeader *page_header, Record *records[], size_t *count, Arena *const arena);
+int db_get_table_records(const Database *db, const PageHeader *page_header, Record *records[], size_t *count,
+                         Arena *const arena);
 
 /**
  * Get schema table rows

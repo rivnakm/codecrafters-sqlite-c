@@ -10,7 +10,6 @@ void to_be_bytes(uint8_t *dest, const uint64_t value, const size_t n)
     for (size_t i = 0; i < n; i++)
     {
         size_t offset = (n - 1 - i) * 8;
-        assert(offset < 64);
         dest[i] = (value >> offset) & 0xFF;
     }
 }
